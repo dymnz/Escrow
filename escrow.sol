@@ -8,12 +8,21 @@ contract Escrow {
         _;
     }
     
+    modifier onlyParty() {
+        if (msg.sender != party1 && msg.sender != party2) throw;
+
+        _;
+    }
+    
     address public broker;
     address public party1;
     address public party2;
     uint public deposited1;
     uint public deposited2;
     uint public setFee;
+    
+    bool forceRelease1;
+    bool forceRelease2;
     
     
     function Escrow(address p1, address p2, uint fee) {
@@ -41,6 +50,19 @@ contract Escrow {
         if (deposited2 - setFee < 0) return;
         broker.send(setFee);
         party2.send(deposited2-setFee);
+    }
+    
+    function forceRelease() onlyParty{
+        if (msg.sender == party1) forceRelease1 = true;
+        else if (msg.sender == party2) forceRelease2 = true;
+        
+        if (forceRelease1 && forceRelease2)
+        {
+            party1.send(deposited1-setFee);
+            party2.send(deposited2-setFee);
+            deposited1 = 0;
+            deposited2 = 0;
+        }
     }
 
     function () { throw; }
