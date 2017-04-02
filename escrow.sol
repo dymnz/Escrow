@@ -58,8 +58,12 @@ contract Escrow {
         
         if (forceRelease1 && forceRelease2)
         {
+        	if (deposited1 - setFee < 0) return;
             party1.send(deposited1-setFee);
+            
+            if (deposited2 - setFee < 0) return;
             party2.send(deposited2-setFee);
+
             deposited1 = 0;
             deposited2 = 0;
         }
