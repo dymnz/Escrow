@@ -25,11 +25,17 @@ contract Escrow {
     bool forceRelease2;
     
     
-    function Escrow(address p1, address p2, uint fee) {
+    function Escrow(uint fee) {
         broker = msg.sender;
-        party1 = p1;
-        party2 = p2;
         setFee = fee;
+    }
+
+    function register1() {
+        if (party1 == address(0)) party1 = msg.sender;
+    }
+
+    function register2() {
+        if (party2 == address(0)) party2 = msg.sender;
     }
     
     function deposit1() payable{
